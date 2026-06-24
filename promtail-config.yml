@@ -1,0 +1,59 @@
+# un fichier de configuration de Promtail, qui fait partie de la stack de logs Grafana
+# sert à définir comment Promtail va collecter tes logs
+
+# Il dit de quels fichiers ou conteneurs récupérer les logs, et vers quelle instance de Loki (un stockage de logs) il va les envoyer
+# Grafana, c’est un outil qui te permet de visualiser et explorer ces logs, ainsi que d’autres métriques.
+
+# Promtail collecte et envoie, Loki stocke, et Grafana affiche les logs et métriques de manière claire et exploitable.
+
+
+
+
+# le bloc serveur dans la configuration de Promtail, c’est pour exposer une petite interface.
+# Ce n’est pas un serveur d’applications comme Nginx ou Spring Boot, c’est juste un petit point d’entrée pour superviser Promtail lui-même.
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+
+
+# Les positions, c’est un peu la mémoire de Promtail. Quand il lit des logs, il garde en tête où il s’est arrêté
+# Comme ça, si Promtail redémarre, il sait reprendre là où il s’était arrêté, sans relire les mêmes lignes
+
+positions:
+  filename: /tmp/positions.yaml
+
+
+
+# Le client avec l’URL de Loki, c’est la destination finale des logs. Promtail collecte les logs localement, puis il les envoie à Loki via cette URL
+# Loki, c’est le stockage central qui va recevoir tous ces logs, les indexer et te permettre de les interroger plus tard, notamment via Grafana pour les visualiser.
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+
+
+
+
+scrape_configs:
+
+  # Collecte tous les logs des conteneurs Docker
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        target_label: container
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: stream
+
+  # Logs spécifiques du backend Spring Boot
+  - job_name: backend
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: backend
+          __path__: /var/lib/docker/containers/*/*-json.log
