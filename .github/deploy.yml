@@ -1,0 +1,36 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Récupère le code du repo
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Se connecte en SSH à EC2 et déploie
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Mise à jour des trois repos
+            cd ~/backend-datashare && git pull
+            cd ~/frontend-datashare && git pull
+            cd ~/infra-datashare && git pull
+
+            # Rebuild et redémarrage des conteneurs
+            cd ~/infra-datashare
+            docker compose build
+            docker compose up -d
+
+            # Nettoyage des anciennes images
+            docker image prune -f
