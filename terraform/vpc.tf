@@ -51,6 +51,25 @@ resource "aws_route_table_association" "public" {
 }
 
 
+
+
+# Deuxième subnet, dans une autre AZ, requis par RDS (DB subnet group)
+# Privé : pas d'IP publique attribuée automatiquement, pas de route vers l'Internet Gateway
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet_cidr
+  availability_zone       = "${var.aws_region}b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-private-subnet"
+  }
+}
+
+
+
+
+
 # COMMENTAIRES
 
 # Le VPC, c’est ton espace isolé. Le subnet public est un sous-réseau dans lequel tes ressources peuvent avoir une IP publique. 

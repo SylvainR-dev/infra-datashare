@@ -13,6 +13,11 @@ output "ssh_command" {
   value       = "ssh -i ~/.ssh/${var.key_name} ubuntu@${aws_eip.app.public_ip}"
 }
 
+output "rds_endpoint" {
+  description = "Endpoint de connexion à la base de données PostgreSQL"
+  value       = aws_db_instance.main.endpoint
+}
+
 
 # COMMENTAIRES
 

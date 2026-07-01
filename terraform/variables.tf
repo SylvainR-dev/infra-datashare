@@ -46,6 +46,35 @@ variable "ssh_allowed_cidr" {
 
 
 
+variable "private_subnet_cidr" {
+  description = "Plage d'adresses IP du subnet privé (utilisé par RDS)"
+  type        = string
+  default     = "10.0.2.0/24"
+}
+
+variable "db_name" {
+  description = "Nom de la base de données PostgreSQL"
+  type        = string
+  default     = "datashare"
+}
+
+variable "db_username" {
+  description = "Nom d'utilisateur administrateur de la base de données"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_password" {
+  description = "Mot de passe administrateur de la base de données"
+  type        = string
+  sensitive   = true
+}
+
+
+
+
+
+
 # COMMENTAIRES
 
 # ce fichier sert à rendre ton infrastructure Terraform flexible. Il définit toutes les variables dont tu auras besoin pour adapter ton déploiement. 
