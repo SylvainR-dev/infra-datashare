@@ -18,6 +18,15 @@ output "rds_endpoint" {
   value       = aws_db_instance.main.endpoint
 }
 
+output "s3_bucket_name" {
+  description = "Nom du bucket S3 pour le stockage des fichiers"
+  value       = aws_s3_bucket.uploads.id
+}
+
+output "s3_bucket_arn" {
+  description = "ARN du bucket S3"
+  value       = aws_s3_bucket.uploads.arn
+}
 
 # COMMENTAIRES
 
