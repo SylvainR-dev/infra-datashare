@@ -10,7 +10,7 @@ output "public_ip" {
 
 output "ssh_command" {
   description = "Commande pour se connecter en SSH"
-  value       = "ssh -i ~/.ssh/${var.key_name}.pem ubuntu@${aws_eip.app.public_ip}"
+  value       = "ssh -i ~/.ssh/${var.key_name} ubuntu@${aws_eip.app.public_ip}"
 }
 
 

@@ -5,7 +5,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-noble-24.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -50,7 +50,7 @@ resource "aws_eip" "app" {
 
 
 # resource "aws_instance"
-définit vraiment ton instance EC2. Tu prends l’AMI trouvée (donc l’image Ubuntu) et tu précises le type d’instance (par exemple t3.small via ta variable), 
+# définit vraiment ton instance EC2. Tu prends l’AMI trouvée (donc l’image Ubuntu) et tu précises le type d’instance (par exemple t3.small via ta variable), 
 # le subnet (donc ton réseau), et le security group. En gros, c’est là que tu dis : « Voilà le serveur que je veux, 
 # avec ces paramètres et dans cet environnement.
 
