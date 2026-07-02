@@ -1,0 +1,88 @@
+---
+# Playbook d'installation de Docker et Docker Compose
+# sur l'environnement sandbox DataShare
+
+- name: Installer Docker et Docker Compose
+  hosts: sandbox
+  become: true # équivalent de sudo pour toutes les tâches de ce playbook
+
+  tasks:
+    - name: Mettre à jour le cache apt
+      apt:
+        update_cache: true
+
+    - name: Installer les paquets prérequis
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    - name: Créer le dossier pour les clés GPG
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Ajouter la clé GPG officielle de Docker
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+
+    - name: Ajouter le dépôt Docker
+      apt_repository:
+        repo: "deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+    - name: Installer Docker Engine et le plugin Compose
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Ajouter l'utilisateur ubuntu au groupe docker
+      user:
+        name: ubuntu
+        groups: docker
+        append: true
+
+    - name: S'assurer que Docker est démarré et activé au boot
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+
+
+# Au lancement : 
+# Lance-le depuis infra-datashare/ansible/ : ansible-playbook playbook.yml
+# Playbook exécuté avec succès : 9 ok, 5 changed, 0 failed. Docker et Docker Compose sont maintenant installés sur ton EC2 sandbox.
+
+# Vérification rapide pour confirmer que tout est bien en place :
+# ssh -i ~/.ssh/datashare-tf-key ubuntu@51.44.121.164
+# docker --version
+# docker compose version
+
+
+# Point important à tester aussi : l'ajout de l'utilisateur ubuntu au groupe docker (dernière tâche changed) 
+# ne prend effet qu'à la prochaine connexion — donc si tu testes docker ps juste après t'être connecté sans avoir fermé/rouvert la session, 
+# tu pourrais avoir une erreur de permission. Si ça arrive :
+
+# faire d'abord : exit
+
+# puis reconnecte-toi :
+# ssh -i ~/.ssh/datashare-tf-key ubuntu@51.44.121.164
+# docker ps
+
+# Petite bonne pratique d'idempotence à essayer, pour bien comprendre Ansible : relance le même playbook une deuxième fois :
+# ansible-playbook playbook.yml
+# Tu devrais voir cette fois beaucoup plus de ok et moins de changed (voire zéro changed si rien n'a bougé entre temps) — 
+# c'est la preuve concrète du concept d'idempotence : Ansible détecte que Docker est déjà installé, déjà démarré, 
+# l'utilisateur déjà dans le groupe, etc., et ne refait que ce qui est nécessaire.
