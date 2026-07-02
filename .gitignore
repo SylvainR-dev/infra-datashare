@@ -16,3 +16,56 @@ Thumbs.db
 .idea/
 .vscode/
 *.iml
+
+# ============================
+# Terraform
+# ============================
+
+# Dossier local contenant les plugins/providers téléchargés par Terraform
+.terraform/
+
+# Fichier de verrouillage des providers -> NE PAS ignorer, il doit être commité
+# .terraform.lock.hcl
+
+# Fichiers d'état Terraform : contiennent TOUTES les infos des ressources
+# créées (parfois en clair, y compris des données sensibles) -> jamais commité
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Fichiers de variables contenant des valeurs spécifiques à une personne/env
+# (IP, clés, secrets...) -> jamais commité
+*.tfvars
+*.tfvars.json
+
+# Fichiers de plan Terraform (sortie de `terraform plan -out=...`)
+*.tfplan
+
+# Logs de crash Terraform
+crash.log
+crash.*.log
+
+# Fichiers de override (utilisés en debug/test local, jamais partagés)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Dossier CLI de config Terraform (rare, mais par précaution)
+.terraformrc
+terraform.rc
+
+# ============================
+# Ansible
+# ============================
+
+# Inventaire : contient des IPs/infos d'environnement spécifiques -> jamais commité
+hosts.ini
+inventory/hosts.ini
+
+# Fichiers .retry générés automatiquement après un échec de playbook
+*.retry
+
+# Fichiers de secrets chiffrés Ansible Vault, si utilisés plus tard
+vault.yml
+*.vault.yml

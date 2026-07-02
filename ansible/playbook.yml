@@ -66,7 +66,7 @@
 # Playbook exécuté avec succès : 9 ok, 5 changed, 0 failed. Docker et Docker Compose sont maintenant installés sur ton EC2 sandbox.
 
 # Vérification rapide pour confirmer que tout est bien en place :
-# ssh -i ~/.ssh/datashare-tf-key ubuntu@51.44.121.164
+# ssh -i ~/.ssh/datashare-tf-key ubuntu@IP publique
 # docker --version
 # docker compose version
 
@@ -78,7 +78,7 @@
 # faire d'abord : exit
 
 # puis reconnecte-toi :
-# ssh -i ~/.ssh/datashare-tf-key ubuntu@51.44.121.164
+# ssh -i ~/.ssh/datashare-tf-key ubuntu@IP publique
 # docker ps
 
 # Petite bonne pratique d'idempotence à essayer, pour bien comprendre Ansible : relance le même playbook une deuxième fois :
